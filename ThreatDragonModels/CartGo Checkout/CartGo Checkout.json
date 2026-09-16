@@ -20,6 +20,40 @@
         "version": "2.6.2",
         "cells": [
           {
+            "shape": "trust-boundary-curve",
+            "width": 200,
+            "height": 100,
+            "zIndex": -1,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Boundary",
+              "name": "Trust Boundary",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false,
+              "crossingFlows": [],
+              "containedElements": []
+            },
+            "labels": [
+              "Trust Boundary"
+            ],
+            "id": "08dc54e6-3675-423b-86c4-026c31457244",
+            "source": {
+              "x": 450,
+              "y": 191
+            },
+            "target": {
+              "x": 830,
+              "y": 200
+            },
+            "vertices": [
+              {
+                "x": 640,
+                "y": 191
+              }
+            ]
+          },
+          {
             "position": {
               "x": 400,
               "y": 70
@@ -1315,6 +1349,11 @@
             },
             "tools": {
               "items": [
+                "boundary",
+                "button-remove",
+                "vertices",
+                "source-arrowhead",
+                "target-arrowhead",
                 "boundary",
                 "button-remove",
                 "vertices",
