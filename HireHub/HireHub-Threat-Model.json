@@ -1,0 +1,1754 @@
+{
+  "summary": {
+    "title": "HireHub Recruitment Portal - Threat Model",
+    "owner": "Wqerty",
+    "description": "Prelim Exam - Threat Modeling Practical. Scenario 6: HireHub Recruitment Portal. Applicants submit applications and upload resumes; recruiters review candidates and initiate background checks via a third-party vendor API.",
+    "id": 0
+  },
+  "detail": {
+    "contributors": [
+      {
+        "name": "Wqerty"
+      }
+    ],
+    "diagrams": [
+      {
+        "cells": [
+          {
+            "position": {
+              "x": 40,
+              "y": 40
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "Applicant"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "actor",
+            "id": "fae8acb9-54c0-4656-b2b8-e09181904059",
+            "data": {
+              "name": "Applicant",
+              "description": "",
+              "type": "tm.Actor",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Applicant identity spoofing",
+                  "type": "Spoofing",
+                  "description": "An attacker uses stolen, guessed, or credential-stuffed login details (or a hijacked session token) to impersonate a legitimate applicant, submit fraudulent applications, or view/modify that applicant's profile and uploaded resume.",
+                  "mitigation": "Enforce MFA for applicant accounts, rate-limit and monitor login attempts, use short-lived rotating session tokens, and bind sessions to device/IP fingerprint where feasible.",
+                  "modelType": "STRIDE",
+                  "id": "4785bbc0-45e8-44ee-9b0a-d5e4fc9fde3b"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Applicant action repudiation",
+                  "type": "Repudiation",
+                  "description": "An applicant denies having submitted a specific application, withdrawn an application, or uploaded a specific resume version, and the portal cannot produce sufficient evidence (timestamped, attributable logs) to refute the claim.",
+                  "mitigation": "Log every applicant-initiated action (submit, edit, withdraw, upload) with timestamp, authenticated user ID, and source IP; retain immutable audit logs.",
+                  "modelType": "STRIDE",
+                  "id": "b29a52d7-e47a-4cbf-b850-4eb3e783196f"
+                }
+              ],
+              "hasOpenThreats": true,
+              "providesAuthentication": false
+            }
+          },
+          {
+            "position": {
+              "x": 1020,
+              "y": 40
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "Recruiter"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "actor",
+            "id": "934ca014-90ec-449e-9ecd-ffd4835966da",
+            "data": {
+              "name": "Recruiter",
+              "description": "",
+              "type": "tm.Actor",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Recruiter identity spoofing",
+                  "type": "Spoofing",
+                  "description": "An attacker phishes or otherwise obtains a recruiter's credentials (or hijacks a recruiter session) to gain access to the candidate review dashboard, applicant PII, and the ability to initiate background checks.",
+                  "mitigation": "Enforce MFA and SSO for recruiter accounts, enforce short session timeouts, and alert on logins from new devices/locations.",
+                  "modelType": "STRIDE",
+                  "id": "cdb3c53e-905d-4182-bd4e-06574e3c6fe9"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Recruiter action repudiation",
+                  "type": "Repudiation",
+                  "description": "A recruiter denies having reviewed, rejected, or initiated a background check on a specific candidate, and there is no reliable, attributable audit trail to establish who performed the action and when.",
+                  "mitigation": "Log all recruiter actions (candidate review, status changes, background-check initiation) with authenticated user ID and timestamp in a tamper-evident audit log used for compliance review.",
+                  "modelType": "STRIDE",
+                  "id": "cf8193ee-aa95-4696-844e-5d6d60f2074e"
+                }
+              ],
+              "hasOpenThreats": true,
+              "providesAuthentication": false
+            }
+          },
+          {
+            "position": {
+              "x": 1020,
+              "y": 420
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "Background Check Vendor API"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "actor",
+            "id": "6eb5d6d1-cecd-40b0-b41e-2a3a19f4c244",
+            "data": {
+              "name": "Background Check Vendor API",
+              "description": "",
+              "type": "tm.Actor",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Vendor API endpoint spoofing",
+                  "type": "Spoofing",
+                  "description": "An attacker stands up a rogue endpoint, performs DNS hijacking, or downgrades TLS to impersonate the legitimate Background Check Vendor API and harvest applicant PII sent for screening.",
+                  "mitigation": "Pin the vendor's TLS certificate/public key, validate the full certificate chain, and use mutual TLS or signed API requests for the vendor integration.",
+                  "modelType": "STRIDE",
+                  "id": "4e35c5f0-d3f4-4fdf-a6c4-e29a6e9ac11a"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Vendor request/response repudiation",
+                  "type": "Repudiation",
+                  "description": "The vendor disputes having received a specific background-check request, or the portal disputes the results the vendor claims to have returned, with no non-repudiable record (e.g., signed requests/responses, correlation IDs) on either side.",
+                  "mitigation": "Require signed requests and responses with correlation/transaction IDs, and retain both sides' signed payloads for the compliance retention period.",
+                  "modelType": "STRIDE",
+                  "id": "1443c5b2-d6ba-43fe-9b22-4a5171d06c61"
+                }
+              ],
+              "hasOpenThreats": true,
+              "providesAuthentication": false
+            }
+          },
+          {
+            "position": {
+              "x": 40,
+              "y": 220
+            },
+            "size": {
+              "width": 120,
+              "height": 100
+            },
+            "attrs": {
+              "text": {
+                "text": "Authenticate User"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "process",
+            "id": "61e3a6b8-f8dd-4efb-aad3-1e78a1529c18",
+            "data": {
+              "name": "Authenticate User",
+              "description": "",
+              "type": "tm.Process",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Credential stuffing / brute force login",
+                  "type": "Spoofing",
+                  "description": "An attacker automates login attempts against the Authenticate User process using leaked credential lists or brute force, potentially gaining access as an applicant or recruiter.",
+                  "mitigation": "Enforce account lockout/backoff, CAPTCHA after repeated failures, MFA, and monitor for credential-stuffing patterns.",
+                  "modelType": "STRIDE",
+                  "id": "d7232eeb-4c28-4282-a810-620ffa5ce8c4"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Session/token tampering for privilege escalation",
+                  "type": "Tampering",
+                  "description": "An attacker modifies an authentication token or session cookie (e.g., a JWT role claim) to change their assigned role from applicant to recruiter.",
+                  "mitigation": "Use signed, server-validated tokens (e.g., JWT with strong signature verification), never trust client-supplied role claims, and re-derive role from server-side state.",
+                  "modelType": "STRIDE",
+                  "id": "122daad4-ae7b-4690-83cc-414c34e8a4f1"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Insufficient authentication event logging",
+                  "type": "Repudiation",
+                  "description": "Login successes, failures, and password changes are not logged with enough detail (timestamp, source IP, user agent, outcome) to reconstruct an account-takeover incident after the fact.",
+                  "mitigation": "Centrally log all authentication events with timestamp, source IP, and outcome; alert on anomalous patterns.",
+                  "modelType": "STRIDE",
+                  "id": "7dbf3efb-6402-4587-844c-29005fff7902"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Account enumeration via verbose auth errors",
+                  "type": "Information disclosure",
+                  "description": "Distinct error messages for 'user not found' versus 'wrong password' (or password-reset flows) let an attacker enumerate valid applicant and recruiter email addresses.",
+                  "mitigation": "Return generic authentication error messages and use consistent response timing regardless of whether the account exists.",
+                  "modelType": "STRIDE",
+                  "id": "2c5f58d9-c17c-4c4c-b321-44e6271ba541"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Login endpoint flooding",
+                  "type": "Denial of service",
+                  "description": "An attacker floods the Authenticate User process with high-volume login requests, exhausting compute resources or triggering mass account lockouts that deny access to legitimate applicants and recruiters.",
+                  "mitigation": "Apply rate limiting and IP/device reputation checks at the edge (WAF/API gateway), and use progressive lockout that cannot be weaponized to lock out arbitrary users.",
+                  "modelType": "STRIDE",
+                  "id": "0031229e-d4e0-4827-9d03-735ffdc113a5"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Role manipulation for privilege escalation",
+                  "type": "Elevation of privilege",
+                  "description": "A flaw in role assignment logic allows an authenticated applicant to obtain a recruiter session or elevated privileges by manipulating a client-supplied role or scope parameter.",
+                  "mitigation": "Assign and enforce roles exclusively from server-side, authoritative data; never accept role/permission values from the client.",
+                  "modelType": "STRIDE",
+                  "id": "0a21012e-22b5-4ec7-b13e-2b251d2183f0"
+                }
+              ],
+              "hasOpenThreats": true
+            }
+          },
+          {
+            "position": {
+              "x": 220,
+              "y": 220
+            },
+            "size": {
+              "width": 120,
+              "height": 100
+            },
+            "attrs": {
+              "text": {
+                "text": "Submit Application"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "process",
+            "id": "7a2a729a-b044-4cff-9908-53c2e00c0348",
+            "data": {
+              "name": "Submit Application",
+              "description": "",
+              "type": "tm.Process",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Forged applicant identity on submission",
+                  "type": "Spoofing",
+                  "description": "An attacker submits an application under a forged or unverified applicant identity (e.g., using someone else's name/email without verification) to plant fraudulent data in the system.",
+                  "mitigation": "Require verified email/identity confirmation before an application is accepted, and bind submissions to an authenticated session.",
+                  "modelType": "STRIDE",
+                  "id": "18863c17-3bad-4438-bc4d-6974ab1642b7"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Parameter tampering on application submission",
+                  "type": "Tampering",
+                  "description": "An attacker manipulates hidden form fields or API parameters (e.g., applicant ID, job posting ID) to submit an application on behalf of another applicant or against a job posting not shown to them.",
+                  "mitigation": "Validate that the authenticated session owns the applicant ID and that the job posting ID is active/visible server-side; never trust client-supplied ownership fields.",
+                  "modelType": "STRIDE",
+                  "id": "244528b5-ba83-4bb7-a815-c9b36f727246"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Unverifiable application content",
+                  "type": "Repudiation",
+                  "description": "There is no immutable, timestamped, hashed record of exactly what content an applicant submitted, so an applicant can later dispute what was in their application.",
+                  "mitigation": "Store a cryptographic hash and timestamp of each submitted application payload in an append-only audit log.",
+                  "modelType": "STRIDE",
+                  "id": "1618ee00-75ce-4e23-a77d-7d91cbb9e8c8"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "IDOR exposes other applicants' submissions",
+                  "type": "Information disclosure",
+                  "description": "An insecure direct object reference on the submission/edit endpoint allows an attacker to view or edit another applicant's in-progress or submitted application by changing an ID parameter.",
+                  "mitigation": "Enforce server-side authorization checks that the authenticated user owns the application record on every read/write.",
+                  "modelType": "STRIDE",
+                  "id": "3c549162-b52d-44c3-b154-94871584e7fb"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Automated bulk/bot application flooding",
+                  "type": "Denial of service",
+                  "description": "An attacker scripts a large volume of automated application submissions, exhausting database and storage capacity and degrading the service for legitimate applicants.",
+                  "mitigation": "Add CAPTCHA/bot detection on the submission endpoint, rate-limit per account/IP, and monitor submission volume anomalies.",
+                  "modelType": "STRIDE",
+                  "id": "adc6814a-f232-43f2-94fc-7940eab3511e"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Mass assignment to privileged fields",
+                  "type": "Elevation of privilege",
+                  "description": "A mass-assignment flaw lets an applicant set fields in the submission payload that should be recruiter-only (e.g., application status, internal notes, 'shortlisted' flag).",
+                  "mitigation": "Use an explicit allow-list of applicant-writable fields server-side; reject or ignore any other fields in the request.",
+                  "modelType": "STRIDE",
+                  "id": "ee4d1586-ccd3-4fb4-90ca-62f9540a8bc1"
+                }
+              ],
+              "hasOpenThreats": true
+            }
+          },
+          {
+            "position": {
+              "x": 400,
+              "y": 220
+            },
+            "size": {
+              "width": 120,
+              "height": 100
+            },
+            "attrs": {
+              "text": {
+                "text": "Upload Resume"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "process",
+            "id": "30e22493-6bd1-400e-b89e-2697803aece0",
+            "data": {
+              "name": "Upload Resume",
+              "description": "",
+              "type": "tm.Process",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Resume upload under a spoofed session",
+                  "type": "Spoofing",
+                  "description": "An attacker exploits a session-fixation or CSRF flaw to upload a resume while impersonating another applicant's session, attaching unwanted or malicious content to that applicant's profile.",
+                  "mitigation": "Use anti-CSRF tokens, SameSite cookies, and re-validate session ownership on the upload endpoint.",
+                  "modelType": "STRIDE",
+                  "id": "99b80037-f571-4f0f-8fd6-b065cd7fa6e2"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Malicious file uploaded as a resume",
+                  "type": "Tampering",
+                  "description": "An attacker uploads a file disguised as a resume (e.g., a macro-laden document, embedded script, or polyglot file) that executes malicious code when opened by a recruiter or processed by an automated resume parser.",
+                  "mitigation": "Restrict accepted file types/extensions, strip active content, scan uploads with antivirus/sandboxing, and render resumes in a safe viewer rather than opening the native file.",
+                  "modelType": "STRIDE",
+                  "id": "9a40e5d8-85b4-48cc-b60c-7ef4326cc892"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "No integrity record for uploaded files",
+                  "type": "Repudiation",
+                  "description": "There is no hash or logged linkage tying a specific uploaded file to a specific applicant session and timestamp, making it impossible to prove which file was uploaded and when.",
+                  "mitigation": "Compute and store a content hash plus authenticated uploader ID and timestamp for every uploaded file.",
+                  "modelType": "STRIDE",
+                  "id": "aad46d77-7121-4218-b059-82612e08647f"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Predictable resume storage paths",
+                  "type": "Information disclosure",
+                  "description": "Predictable or unauthenticated storage URLs/paths allow an attacker to enumerate and directly download other applicants' resumes from Document Storage, bypassing the application.",
+                  "mitigation": "Use non-guessable object keys, require authenticated/authorized signed URLs with short expiry for all resume access.",
+                  "modelType": "STRIDE",
+                  "id": "b6d5e19f-50cc-4007-9c92-2e688b984bc9"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Storage exhaustion via oversized/flooded uploads",
+                  "type": "Denial of service",
+                  "description": "An attacker uploads oversized files or floods the upload endpoint with requests, exhausting Document Storage capacity or upload bandwidth and blocking legitimate applicants from uploading.",
+                  "mitigation": "Enforce file size limits, per-account upload quotas/rate limits, and storage capacity alerts.",
+                  "modelType": "STRIDE",
+                  "id": "1fd0b925-7507-4774-a84a-14decaf3c536"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Code execution via resume parser vulnerability",
+                  "type": "Elevation of privilege",
+                  "description": "An attacker crafts a resume file that exploits a vulnerability in a downstream resume-parsing library, achieving code execution with the application process's privileges.",
+                  "mitigation": "Run file parsing in an isolated/sandboxed worker with minimal privileges, keep parsing libraries patched, and validate file structure before parsing.",
+                  "modelType": "STRIDE",
+                  "id": "e00335d1-c1d2-4937-9f21-d3b310acd689"
+                }
+              ],
+              "hasOpenThreats": true
+            }
+          },
+          {
+            "position": {
+              "x": 580,
+              "y": 220
+            },
+            "size": {
+              "width": 120,
+              "height": 100
+            },
+            "attrs": {
+              "text": {
+                "text": "Review Candidates"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "process",
+            "id": "eec2cd1b-79bd-419f-94a4-a91d51a40e3d",
+            "data": {
+              "name": "Review Candidates",
+              "description": "",
+              "type": "tm.Process",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Recruiter session spoofing for bulk access",
+                  "type": "Spoofing",
+                  "description": "An attacker impersonates a recruiter session to browse, filter, and export the full applicant database beyond what any single recruiter should access.",
+                  "mitigation": "Bind sessions to device fingerprint, require MFA, and set per-session/per-account export limits with alerting.",
+                  "modelType": "STRIDE",
+                  "id": "50f1b7a4-3c20-4bef-b1e7-d356538d7c86"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Unauthorized tampering with candidate status",
+                  "type": "Tampering",
+                  "description": "A malicious or compromised recruiter account silently changes a candidate's status, notes, or ranking (e.g., rejecting a candidate) without proper authorization or a visible trail.",
+                  "mitigation": "Require role-appropriate approval for status changes on shortlisted/offer-stage candidates and record before/after values in an audit log.",
+                  "modelType": "STRIDE",
+                  "id": "3759cab7-dab7-4f51-b1a7-677fcb0aaa7a"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Untraceable candidate review decisions",
+                  "type": "Repudiation",
+                  "description": "Recruiter actions in the review process (viewing, shortlisting, rejecting) are not logged per authenticated user, making it impossible to trace which recruiter made which hiring-related decision.",
+                  "mitigation": "Log every review action with recruiter ID, candidate ID, action, and timestamp in an audit trail retained per HR record-keeping requirements.",
+                  "modelType": "STRIDE",
+                  "id": "83b208b7-66d0-4a92-a3ea-e2eb90512a00"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Over-exposure of sensitive applicant fields",
+                  "type": "Information disclosure",
+                  "description": "Lack of field-level access control exposes sensitive applicant data (e.g., identifiers, protected characteristics collected for EEO purposes) to recruiters who should not see them, or to recruiters outside the relevant business unit.",
+                  "mitigation": "Apply field-level and record-level access control based on recruiter role/department; mask protected-characteristic fields from hiring decision-makers where required.",
+                  "modelType": "STRIDE",
+                  "id": "d9b113fc-7fc4-4504-9521-e9256be06248"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Expensive search queries degrade availability",
+                  "type": "Denial of service",
+                  "description": "Unbounded or unindexed search/filter queries issued from the review UI allow an attacker (or a careless recruiter) to trigger expensive database scans that degrade the Applicant Profiles DB for all users.",
+                  "mitigation": "Add query timeouts, pagination limits, and proper indexing; rate-limit search requests per recruiter.",
+                  "modelType": "STRIDE",
+                  "id": "a6edf899-e3a3-4403-bb91-8cb81c500f53"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Privilege escalation to admin-only actions",
+                  "type": "Elevation of privilege",
+                  "description": "A recruiter exploits an authorization gap to reach admin-only functionality from the review interface, such as bulk-exporting all candidates or editing job postings they should not manage.",
+                  "mitigation": "Enforce server-side role checks on every admin action, independent of what the UI displays, and log attempted access to out-of-scope functions.",
+                  "modelType": "STRIDE",
+                  "id": "f5f4234c-4849-43bc-8bf4-480f8205b77c"
+                }
+              ],
+              "hasOpenThreats": true
+            }
+          },
+          {
+            "position": {
+              "x": 760,
+              "y": 220
+            },
+            "size": {
+              "width": 120,
+              "height": 100
+            },
+            "attrs": {
+              "text": {
+                "text": "Initiate Background Check"
+              },
+              "body": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "process",
+            "id": "d3b77900-19c6-4a78-98be-a964f34b456d",
+            "data": {
+              "name": "Initiate Background Check",
+              "description": "",
+              "type": "tm.Process",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Spoofed or replayed vendor request",
+                  "type": "Spoofing",
+                  "description": "An attacker spoofs or replays a captured request to the Background Check Vendor API to trigger unauthorized background checks or to retrieve results for a candidate they should not have access to.",
+                  "mitigation": "Use mutual TLS or signed, nonce-based requests with short validity windows to the vendor API; reject replayed requests.",
+                  "modelType": "STRIDE",
+                  "id": "b033ce64-87ee-4797-9cb2-307c611cb19d"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Tampered vendor request payload",
+                  "type": "Tampering",
+                  "description": "An attacker intercepts and modifies the payload sent to the Background Check Vendor API (e.g., swapping the candidate identifier), causing results to be misapplied to the wrong applicant.",
+                  "mitigation": "Use TLS with certificate pinning and integrity-protected (signed/HMAC'd) payloads for all vendor requests.",
+                  "modelType": "STRIDE",
+                  "id": "fa3db8be-60e2-4fc8-8258-e6200613fb83"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "No auditable link between recruiter and check request",
+                  "type": "Repudiation",
+                  "description": "There is no signed or reliably logged record correlating which recruiter initiated which background-check request and when, complicating compliance audits (e.g., FCRA adverse-action requirements).",
+                  "mitigation": "Log recruiter ID, candidate ID, consent record reference, and vendor transaction/correlation ID for every initiated check, retained per compliance policy.",
+                  "modelType": "STRIDE",
+                  "id": "5b15fe03-f293-48f9-b417-1a5930383e5e"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "PII exposure to/from the vendor",
+                  "type": "Information disclosure",
+                  "description": "Applicant PII (e.g., full name, DOB, SSN-equivalent identifiers, address) sent to the vendor is exposed via an unencrypted channel, overly verbose application logs, or an overscoped/leaked vendor API key.",
+                  "mitigation": "Encrypt PII in transit and avoid logging raw PII; scope the vendor API key to minimum required permissions and rotate it regularly.",
+                  "modelType": "STRIDE",
+                  "id": "a9f409c1-fa8e-44e7-9c94-d1b297deb372"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Background-check request flooding",
+                  "type": "Denial of service",
+                  "description": "An attacker (or a scripting error) triggers a large volume of background-check initiations, exhausting the vendor's rate limit, incurring excessive cost, or disrupting the integration for legitimate use.",
+                  "mitigation": "Rate-limit background-check initiation per recruiter/account and require explicit, logged approval before each request is sent.",
+                  "modelType": "STRIDE",
+                  "id": "fa1229b9-3667-430c-a2ae-823309967e1c"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Unauthorized triggering of background checks",
+                  "type": "Elevation of privilege",
+                  "description": "A flaw in the integration allows an unauthorized actor (e.g., an applicant, or a recruiter without the required approval level) to trigger a background check without proper recruiter authorization and applicant consent verification.",
+                  "mitigation": "Enforce server-side authorization and a verified-consent precondition before any request reaches the vendor API; restrict the initiation action to authorized recruiter roles only.",
+                  "modelType": "STRIDE",
+                  "id": "014a36da-a702-4b9b-87b6-8375d798196c"
+                }
+              ],
+              "hasOpenThreats": true
+            }
+          },
+          {
+            "position": {
+              "x": 60,
+              "y": 420
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "Applicant Profiles DB"
+              },
+              "topLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              },
+              "bottomLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "store",
+            "id": "40a0fd1d-e837-400a-b281-8e6f572e3dbb",
+            "data": {
+              "name": "Applicant Profiles DB",
+              "description": "",
+              "type": "tm.Store",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Unauthorized modification of applicant records",
+                  "type": "Tampering",
+                  "description": "An attacker who gains database access (e.g., via a SQL injection flaw in Submit Application or Review Candidates) modifies applicant profile fields, such as changing an application status to 'hired' or altering contact details.",
+                  "mitigation": "Use parameterized queries/ORM everywhere, apply least-privilege DB accounts per service, and enable change-tracking on sensitive fields.",
+                  "modelType": "STRIDE",
+                  "id": "0ed2b73c-8e08-4694-93a1-ae24b246a019"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Bulk PII exposure from the profiles database",
+                  "type": "Information disclosure",
+                  "description": "Misconfigured database permissions, a missing access control check, or a SQL injection flaw exposes the full Applicant Profiles DB, leaking PII for all applicants at once.",
+                  "mitigation": "Encrypt PII at rest, apply least-privilege network and IAM access to the database, and monitor for anomalous bulk-read query patterns.",
+                  "modelType": "STRIDE",
+                  "id": "e526d3de-0272-4a4f-8af7-867fbdc0b63d"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Query-based resource exhaustion",
+                  "type": "Denial of service",
+                  "description": "An attacker (or an unoptimized recruiter search) performs resource-intensive, unindexed queries against the Applicant Profiles DB, degrading availability for the entire portal.",
+                  "mitigation": "Add indexing on commonly filtered fields, enforce query timeouts and result-size limits, and isolate heavy read workloads from transactional workloads.",
+                  "modelType": "STRIDE",
+                  "id": "748efa26-44dc-4eba-9abe-6a9e5f9760ce"
+                }
+              ],
+              "hasOpenThreats": true,
+              "isALog": false,
+              "storesCredentials": true,
+              "isEncrypted": false,
+              "isSigned": false
+            }
+          },
+          {
+            "position": {
+              "x": 340,
+              "y": 420
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "Job Postings DB"
+              },
+              "topLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              },
+              "bottomLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "store",
+            "id": "184836c3-b155-4109-92d3-0596ac0c1159",
+            "data": {
+              "name": "Job Postings DB",
+              "description": "",
+              "type": "tm.Store",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Unauthorized edits to job postings",
+                  "type": "Tampering",
+                  "description": "An attacker with write access alters job posting content (e.g., salary, requirements) to mislead applicants, or inserts malicious content (stored XSS) into a posting description.",
+                  "mitigation": "Restrict job-posting write access to authorized recruiter/admin roles, sanitize and encode posting content, and log all edits.",
+                  "modelType": "STRIDE",
+                  "id": "6763bf8a-b7c9-4f74-8482-93a377e473ac"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Exposure of internal-only job postings",
+                  "type": "Information disclosure",
+                  "description": "Draft or internal-only postings (e.g., unannounced roles or internal salary bands) are exposed to unauthorized applicants due to missing visibility/access controls on the Job Postings DB.",
+                  "mitigation": "Enforce a publish-state check on every read path so only 'published' postings are visible externally.",
+                  "modelType": "STRIDE",
+                  "id": "5408513e-f3b8-418a-a293-b4a4b4acc944"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Low",
+                  "title": "Search endpoint overload against job listings",
+                  "type": "Denial of service",
+                  "description": "An attacker floods job-search/listing endpoints with expensive queries against the Job Postings DB, degrading availability for applicants browsing openings.",
+                  "mitigation": "Cache published listings, rate-limit search requests, and add query timeouts/indexing.",
+                  "modelType": "STRIDE",
+                  "id": "04e92236-92a5-4d82-9627-ef5d21db615c"
+                }
+              ],
+              "hasOpenThreats": true,
+              "isALog": false,
+              "storesCredentials": false,
+              "isEncrypted": false,
+              "isSigned": false
+            }
+          },
+          {
+            "position": {
+              "x": 620,
+              "y": 420
+            },
+            "size": {
+              "width": 160,
+              "height": 80
+            },
+            "attrs": {
+              "text": {
+                "text": "Document Storage"
+              },
+              "topLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              },
+              "bottomLine": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "strokeDasharray": null
+              }
+            },
+            "shape": "store",
+            "id": "6f9417fd-3dbf-4130-8478-774b2423a745",
+            "data": {
+              "name": "Document Storage",
+              "description": "",
+              "type": "tm.Store",
+              "isTrustBoundary": false,
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Resume file replacement",
+                  "type": "Tampering",
+                  "description": "An attacker with access to Document Storage replaces a legitimate applicant's resume with a malicious or defamatory document, affecting that applicant's candidacy.",
+                  "mitigation": "Enforce write-once/versioned storage with integrity hashes, and restrict write access to the Upload Resume process only.",
+                  "modelType": "STRIDE",
+                  "id": "2b2b0933-217d-4f67-9dc4-38bec7c6005e"
+                },
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Unauthenticated access to stored resumes",
+                  "type": "Information disclosure",
+                  "description": "An overly permissive storage bucket or ACL configuration allows direct, unauthenticated access to uploaded resumes containing PII, bypassing the portal's access controls entirely.",
+                  "mitigation": "Keep the storage bucket private, require short-lived signed URLs for every access, and audit bucket policy regularly.",
+                  "modelType": "STRIDE",
+                  "id": "1421b8ba-5320-4903-9de1-bf5994131b19"
+                },
+                {
+                  "status": "Open",
+                  "severity": "Medium",
+                  "title": "Storage capacity exhaustion",
+                  "type": "Denial of service",
+                  "description": "An attacker uploads a large volume of oversized files, exhausting Document Storage quota or throughput and blocking new resume uploads for legitimate applicants.",
+                  "mitigation": "Enforce per-file size limits, per-account quotas, and automated capacity alerting/scaling.",
+                  "modelType": "STRIDE",
+                  "id": "86165ea7-1821-48bd-bc46-01bc017490bc"
+                }
+              ],
+              "hasOpenThreats": true,
+              "isALog": false,
+              "storesCredentials": false,
+              "isEncrypted": false,
+              "isSigned": false
+            }
+          },
+          {
+            "shape": "trust-boundary-curve",
+            "attrs": {
+              "line": {
+                "targetMarker": "",
+                "sourceMarker": ""
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "attrs": {
+                  "text": {
+                    "text": "Internet <-> Portal"
+                  }
+                }
+              }
+            ],
+            "data": {
+              "type": "tm.Boundary",
+              "name": "Internet <-> Portal",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            },
+            "id": "bea2ee32-4a52-4e9d-9a72-60a4d888ac08",
+            "source": {
+              "x": 20,
+              "y": 150
+            },
+            "target": {
+              "x": 1160,
+              "y": 150
+            },
+            "vertices": [
+              {
+                "x": 590,
+                "y": 150
+              }
+            ]
+          },
+          {
+            "shape": "trust-boundary-curve",
+            "attrs": {
+              "line": {
+                "targetMarker": "",
+                "sourceMarker": ""
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "attrs": {
+                  "text": {
+                    "text": "Portal <-> Background Check Vendor"
+                  }
+                }
+              }
+            ],
+            "data": {
+              "type": "tm.Boundary",
+              "name": "Portal <-> Background Check Vendor",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            },
+            "id": "82204922-c4fb-4d67-bd4b-e32de0f555be",
+            "source": {
+              "x": 900,
+              "y": 260
+            },
+            "target": {
+              "x": 1080,
+              "y": 420
+            },
+            "vertices": [
+              {
+                "x": 950,
+                "y": 340
+              }
+            ]
+          },
+          {
+            "shape": "trust-boundary-curve",
+            "attrs": {
+              "line": {
+                "targetMarker": "",
+                "sourceMarker": ""
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "attrs": {
+                  "text": {
+                    "text": "Applicant Role <-> Recruiter Role"
+                  }
+                }
+              }
+            ],
+            "data": {
+              "type": "tm.Boundary",
+              "name": "Applicant Role <-> Recruiter Role",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            },
+            "id": "22af87c5-859e-46cd-b4d0-8ab097977fc1",
+            "source": {
+              "x": 550,
+              "y": 190
+            },
+            "target": {
+              "x": 550,
+              "y": 520
+            },
+            "vertices": [
+              {
+                "x": 550,
+                "y": 350
+              }
+            ]
+          },
+          {
+            "shape": "trust-boundary-curve",
+            "attrs": {
+              "line": {
+                "targetMarker": "",
+                "sourceMarker": ""
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "labels": [
+              {
+                "attrs": {
+                  "text": {
+                    "text": "App <-> Data Tier"
+                  }
+                }
+              }
+            ],
+            "data": {
+              "type": "tm.Boundary",
+              "name": "App <-> Data Tier",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false
+            },
+            "id": "c2bae594-41d6-4c38-a55c-2850c49665b3",
+            "source": {
+              "x": 20,
+              "y": 340
+            },
+            "target": {
+              "x": 900,
+              "y": 340
+            },
+            "vertices": [
+              {
+                "x": 460,
+                "y": 340
+              }
+            ]
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Login Credentials (Applicant)",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Credential interception in transit",
+                  "type": "Information disclosure",
+                  "description": "Login credentials sent from the Applicant's browser over the internet to the portal could be intercepted via a man-in-the-middle attack if TLS is missing or misconfigured.",
+                  "mitigation": "Enforce HTTPS/TLS 1.2+ for all traffic, use HSTS, and disable plaintext HTTP entirely.",
+                  "modelType": "STRIDE",
+                  "id": "a0c1d820-3adc-4e57-819f-abefb71b1faf"
+                }
+              ],
+              "isTrustBoundary": false
+            },
+            "id": "bf01269d-65a8-42ae-ab6b-5a04700a69b1",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Login Credentials (Applicant)"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "fae8acb9-54c0-4656-b2b8-e09181904059"
+            },
+            "target": {
+              "cell": "61e3a6b8-f8dd-4efb-aad3-1e78a1529c18"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Login Credentials (Recruiter)",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "5dd82c11-2fed-49d7-80d1-a5ed1f470364",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Login Credentials (Recruiter)"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "934ca014-90ec-449e-9ecd-ffd4835966da"
+            },
+            "target": {
+              "cell": "61e3a6b8-f8dd-4efb-aad3-1e78a1529c18"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Verify Credentials",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "internal",
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "9cc27f9a-d31a-4762-97a2-9e144e0cf090",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Verify Credentials"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "61e3a6b8-f8dd-4efb-aad3-1e78a1529c18"
+            },
+            "target": {
+              "cell": "40a0fd1d-e837-400a-b281-8e6f572e3dbb"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Application Data",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "c1931ae4-ce1c-4867-8132-b48018b7f1a5",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Application Data"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "fae8acb9-54c0-4656-b2b8-e09181904059"
+            },
+            "target": {
+              "cell": "7a2a729a-b044-4cff-9908-53c2e00c0348"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Store Applicant Profile",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "internal",
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "b40a4f28-73f1-4205-9c93-d4a3ea8dbc53",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Store Applicant Profile"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "7a2a729a-b044-4cff-9908-53c2e00c0348"
+            },
+            "target": {
+              "cell": "40a0fd1d-e837-400a-b281-8e6f572e3dbb"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Read Job Posting",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "internal",
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "46268e89-3eb6-4a2b-9104-d6f8ec18df37",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Read Job Posting"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "7a2a729a-b044-4cff-9908-53c2e00c0348"
+            },
+            "target": {
+              "cell": "184836c3-b155-4109-92d3-0596ac0c1159"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Resume File",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "af42fbd2-cea3-408f-83bb-80163530ac04",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Resume File"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "fae8acb9-54c0-4656-b2b8-e09181904059"
+            },
+            "target": {
+              "cell": "30e22493-6bd1-400e-b89e-2697803aece0"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Store Resume",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "internal",
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "f42c0fdd-957b-4ac6-878c-c809a4b8136b",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Store Resume"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "30e22493-6bd1-400e-b89e-2697803aece0"
+            },
+            "target": {
+              "cell": "6f9417fd-3dbf-4130-8478-774b2423a745"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Search/Filter Candidates",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "HTTPS",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "ebc8acc8-8257-4996-b6e4-aa0dca6b6f8f",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Search/Filter Candidates"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "934ca014-90ec-449e-9ecd-ffd4835966da"
+            },
+            "target": {
+              "cell": "eec2cd1b-79bd-419f-94a4-a91d51a40e3d"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Query Candidate Profiles",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "internal",
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "6c7fdbef-1373-4d2d-9c60-792b2891ac2f",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Query Candidate Profiles"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "eec2cd1b-79bd-419f-94a4-a91d51a40e3d"
+            },
+            "target": {
+              "cell": "40a0fd1d-e837-400a-b281-8e6f572e3dbb"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Retrieve Resume",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "internal",
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "4d8d74de-e3c7-4ef4-b486-e572e4aa61ca",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Retrieve Resume"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "eec2cd1b-79bd-419f-94a4-a91d51a40e3d"
+            },
+            "target": {
+              "cell": "6f9417fd-3dbf-4130-8478-774b2423a745"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Selected Candidate Info",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "internal",
+              "isEncrypted": true,
+              "isPublicNetwork": false,
+              "hasOpenThreats": false,
+              "threats": [],
+              "isTrustBoundary": false
+            },
+            "id": "17d9a38c-ec40-453f-bfff-fff1403712c2",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Selected Candidate Info"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "eec2cd1b-79bd-419f-94a4-a91d51a40e3d"
+            },
+            "target": {
+              "cell": "d3b77900-19c6-4a78-98be-a964f34b456d"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Candidate PII + Consent",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "HTTPS/REST",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "PII exposure to third-party vendor in transit",
+                  "type": "Information disclosure",
+                  "description": "Applicant PII and consent data sent to the Background Check Vendor API could be intercepted or logged insecurely if the connection is not strongly encrypted and certificate-validated.",
+                  "mitigation": "Use TLS 1.2+ with certificate pinning to the vendor endpoint, and avoid logging raw PII in application/API logs.",
+                  "modelType": "STRIDE",
+                  "id": "88855d05-1508-4d56-bb74-fc12da595d9b"
+                }
+              ],
+              "isTrustBoundary": false
+            },
+            "id": "35b47594-5677-42d6-a27f-49b158caf4eb",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Candidate PII + Consent"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "d3b77900-19c6-4a78-98be-a964f34b456d"
+            },
+            "target": {
+              "cell": "6eb5d6d1-cecd-40b0-b41e-2a3a19f4c244"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "strokeWidth": 1,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "Background Check Results",
+              "description": "",
+              "outOfScope": false,
+              "reasonOutOfScope": "",
+              "protocol": "HTTPS/REST",
+              "isEncrypted": true,
+              "isPublicNetwork": true,
+              "hasOpenThreats": true,
+              "threats": [
+                {
+                  "status": "Open",
+                  "severity": "High",
+                  "title": "Tampering with returned results in transit",
+                  "type": "Tampering",
+                  "description": "Background check results returned by the vendor could be tampered with in transit, causing the portal to act on incorrect information for a hiring decision.",
+                  "mitigation": "Require signed/HMAC'd vendor responses and verify the signature before accepting results.",
+                  "modelType": "STRIDE",
+                  "id": "760736e4-25aa-4fe6-b154-051bfff501ea"
+                }
+              ],
+              "isTrustBoundary": false
+            },
+            "id": "585b9a3f-b08d-404e-932d-aa84ab983264",
+            "labels": [
+              {
+                "position": 0.5,
+                "attrs": {
+                  "label": {
+                    "text": "Background Check Results"
+                  }
+                }
+              }
+            ],
+            "source": {
+              "cell": "6eb5d6d1-cecd-40b0-b41e-2a3a19f4c244"
+            },
+            "target": {
+              "cell": "d3b77900-19c6-4a78-98be-a964f34b456d"
+            },
+            "vertices": []
+          }
+        ],
+        "version": "2.0",
+        "title": "HireHub Recruitment Portal - Main Data Flow",
+        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
+        "diagramType": "STRIDE",
+        "id": 0
+      }
+    ],
+    "diagramTop": 1,
+    "reviewer": "",
+    "threatTop": 50
+  },
+  "version": "2.0"
+}
